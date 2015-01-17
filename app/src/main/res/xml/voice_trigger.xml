@@ -1,6 +1,6 @@
 <!-- For more information about voice trigger, check out: https://developers.google.com/glass/develop/gdk/starting-glassware -->
 <trigger command="RECOGNIZE_THIS" />
-<!--<trigger keyword="@string/launch_command" >-->
+<!--<trigger keyword="@string/voice_trigger" >-->
     <!--<constraints-->
         <!--camera="true"-->
         <!--network="true" />-->
