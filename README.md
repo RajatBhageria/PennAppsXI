@@ -1,2 +1,0 @@
-# PennAppsXI
-PennApps XI
