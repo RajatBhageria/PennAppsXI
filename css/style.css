@@ -59,13 +59,14 @@ a.rpanel:hover{ color: #fff; }
 
 #header { 
 	width: 100%; 
-	background: url('../img/header-bg.png'); 
-	height: 80px; 	
-	position: fixed;
+	background: rgba(0, 0, 0, 0.4); 
+	height: 75px; 	
+	position: absolute;
+	top: 10px;
 	margin-top: 30px;
 }
 
-#nav { width: 410px; float: right; margin-top: 20px; }
+#nav { width: 410px; float: right; margin-top: 20px; text-align: center; }
 #logo a { color: #fff; text-decoration: none; float: left; font-size: 30px; margin-top: 20px; color: #fff; font-family:"Wellfleet"; font-weight: bold; }
 #nav ul{
 	list-style: none;
@@ -73,7 +74,24 @@ a.rpanel:hover{ color: #fff; }
 	margin: 0 auto;
 	list-style: none;	
 }
-
+#motto {
+	width: 660px;
+	height: 70px;
+	margin: 0 auto;
+	font-family: Comfortaa;
+	color: rgba(255, 255, 255, 0.9);
+	font-weight: 300;
+	font-size: 20px;
+	margin-top: 30px;
+	letter-spacing: 1px;
+}
+#video {
+	width: 850px;
+	height: 500px;
+	background: url('../img/video_bg.png') no-repeat center;
+	margin: 0 auto;
+	margin-top: 40px;
+}
 #nav li{
 	margin-top: 9px;	
 	float: left;
@@ -135,45 +153,43 @@ ul.built { list-style: none; margin: 0 auto; width: 730px; }
 
 #slide1, #slide2{ width: 100%; }
 #slide1{
-	background:url('../img/slide1.jpg') 50% 0 no-repeat fixed;
+	background:url('../img/bg1.jpg') 50% 0 no-repeat fixed;
+	background-size: cover;
 	color: #fff;
-	height: 600px;
+	height: 580px;
 	margin: 0;
 	padding: 200px 0 260px 0;
 	background-size: cover;
 }
 
 #slide2{
-	background-color: #fff;
+	background: url('../img/bg2.jpg') no-repeat center;
+	background-size: cover;
 	color: #333333;
-	height: 300px;
+	height: 780px;
 	margin: 0 auto;
 	overflow: hidden;
-	padding: 200px 0;
+	padding: 100px 0;
+	text-align: center;
+}
+
+#slide2 img {
+	width: 1200px;
 }
 
 #slide3{
-	background: url(../img/slide3.jpg) 50% 0 no-repeat fixed;
+	background: url("../img/bg3.jpg") 50% 0 no-repeat fixed;
 	color: #fff;
 	height: 600px;
 	padding: 170px 0 0 0;	
 	background-size: cover;
 }
 
-#slide4{
-	background-color: #fff;
-	color: #333333;
-	height: 300px;
-	padding: 200px 0;
-}
-
-#slide5{
-	background: url(../img/slide5.jpg) 50% 0 no-repeat fixed;
-	height: 200px;
+#people {
+	width: 760px;
+	height: 230px;
+	background: url('../img/people.png') no-repeat center;
 	margin: 0 auto;
-	padding: 250px 0;
-	color: #fff;
-	background-size: cover;
 }
 
 
