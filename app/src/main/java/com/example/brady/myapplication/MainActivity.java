@@ -2,6 +2,8 @@ package com.example.brady.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,12 +17,14 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
-import org.json.JSONException;
+
 import org.json.JSONObject;
 
 import java.io.File;
@@ -28,6 +32,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
+
+import cat.lafosca.facecropper.FaceCropper;
 
 public class MainActivity extends Activity implements TextToSpeech.OnInitListener,Camera.ShutterCallback,Camera.PictureCallback,SurfaceHolder.Callback{
     /** {@link CardScrollView} to use as the main content view. */
@@ -109,6 +115,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+
     }
 
     @Override
@@ -133,8 +140,10 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
             fos = new FileOutputStream(photo.getPath());
             fos.write(bytes);
             fos.close();
-            PhotoAsyncTask task = new PhotoAsyncTask();
-            task.execute(photo.getPath());
+            startRecognition(photo.getPath());
+
+//            PhotoAsyncTask task = new PhotoAsyncTask();
+//            task.execute(photo.getPath());
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -143,6 +152,21 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
             e.printStackTrace();
         }
         return;
+    }
+
+    public void startRecognition(String photoPath) {
+        // crops image to face and scales it to 800 x 800
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeFile(photoPath, options);
+        FaceCropper mFaceCropper = new FaceCropper();
+        mFaceCropper.setMaxFaces(1);
+        Bitmap cropped = mFaceCropper.getCroppedImage(bitmap);
+        Bitmap scaled = Bitmap.createScaledBitmap(cropped, 800, 800, false);
+
+        ImageView iv = new ImageView(this);
+        iv.setImageBitmap(scaled);
+        ((FrameLayout)findViewById(R.id.layout)).addView(iv);
     }
 
     @Override
