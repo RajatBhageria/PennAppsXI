@@ -1,92 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="What Are You Working On Google Glass App. Facial Recognition for Google Glass.">
-    <meta name="author" content="Rajat Bhageria">
-    <link rel="icon" href="../../favicon.ico">
+	   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+       <title>What's Your Name?</title>
+       <link rel="stylesheet" href="css/style.css"/>
+	   <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+       <link href='http://fonts.googleapis.com/css?family=Wellfleet' rel='stylesheet' type='text/css'>
+	   <link href='http://fonts.googleapis.com/css?family=Wellfleet' rel='stylesheet' type='text/css'>
+	   <link href='http://fonts.googleapis.com/css?family=Arvo:400,700,400italic,700italic' rel='stylesheet' type='text/css'>	
+	   <link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+	   <link href='http://fonts.googleapis.com/css?family=Goudy+Bookletter+1911' rel='stylesheet' type='text/css'>
+	<script>
+   
+<!----- JQUERY FOR SLIDING NAVIGATION --->   
+$(document).ready(function() {
+  $('a[href*=#]').each(function() {
+    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
+    && location.hostname == this.hostname
+    && this.hash.replace(/#/,'') ) {
+      var $targetId = $(this.hash), $targetAnchor = $('[name=' + this.hash.slice(1) +']');
+      var $target = $targetId.length ? $targetId : $targetAnchor.length ? $targetAnchor : false;
+       if ($target) {
+         var targetOffset = $target.offset().top;
 
-    <title>What's Your Name</title>
+<!----- JQUERY CLICK FUNCTION REMOVE AND ADD CLASS "ACTIVE" + SCROLL TO THE #DIV--->   
+         $(this).click(function() {
+            $("#nav li a").removeClass("active");
+            $(this).addClass('active');
+           $('html, body').animate({scrollTop: targetOffset}, 1000);
+           return false;
+         });
+      }
+    }
+  });
 
-    <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+});
 
-    <!-- Custom styles for this template -->
-    <link href="css/cover.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-	<link href="css/style.css" rel="stylesheet">
+</script>
 
-  </head>
 
-  <body>
+ </head> 
+	
+<body>
 
-    <div class="site-wrapper">
+<header id="header">
+<div class="content">
+<div id="logo"><a href=""> What's Your Name </a></div>
 
-      <div class="site-wrapper-inner">
+<nav id="nav">
+	<ul>
+		<li><a href="#slide1" class="active" title="Home" >Home</a></li>
+		<li><a href="#slide2" title="About">About</a></li>
+		<li><a href="#slide" title="Contact">Contact</a></li>
+		
+	</ul>
+</nav>
+</div>
+</header>	
 
-        <div class="cover-container">
+	<div id="slide1">
+		<div class="content">
+            <h1>What's Your Name</h1>
+		    <h2>Google Glass Facial Recognition</h2>
+		    <div id="divider"> </div>
+		</div> 
+    </div> 
 
-          <div class="masthead clearfix">
-            <div class="inner">
-              <h3 class="masthead-brand">What's Your Name</h3>
-              <nav>
-                <ul class="nav masthead-nav">
-                  <li class="active"><a href="index.html">Home</a></li>
-                  <li><a href="Features.html">Features</a></li>
-                  <li><a href="Contact.html">Contact</a></li>
-                </ul>
-              </nav>
-            </div>
-          </div>
-          <!-- Section 1 -->
-          <div class="inner cover">
-            <h1 class="cover-heading">What's Your Name</h1>
-            <p class="lead">Never forget the name of someone you just met. 'What's Your Name' will use Google Glass to take a picture and tell you who you are looking at. </p>
-            <p class="lead">
-              <a href="#" class="btn btn-lg btn-default">Learn more</a>
-            </p>
-          </div>
-          
-          <div class="mastfoot">
-            <div class="inner">
-            </div>
-          </div>
+	<div id="slide2">
+		<div class="content" >
+            <div class="quotes_container">
+		    <h3 class="quotes">“Then the Grinch thought of something he hadn't before! What if Christmas, he thought, doesn't come from a store. What if Christmas...perhaps...means a little bit more!”</h3>
+		  <img src="img/dr-seuss.png" align="left"/> <h4 class="author_name_gray">Dr. Seuss </h4>
+		</div> 
+		</div> 
+    </div> 
+	
+	
+   <div id="slide3">
+		<div class="content">
+			   <div class="quotes_container">
+		       <h3 class="quotes">“I truly believe that if we keep telling the Christmas story, singing the Christmas songs, and living the Christmas spirit, we can bring joy and happiness and peace to this world.”  </h3>
+		      <img src="img/norman.png" align="left"/> <h4 class="author_name_white">Norman Vincent Peale </h4>
+		    </div> 
+		</div> 
+    </div> 
 
-        </div>
+	
+	<div id="slide5">
+		<div class="content">
+           <div class="quotes_container">
+		    <h1>“Let's get in touch! Contact us at Rajat1996@gmail.com” </h1>
+		    
+		  </div> 
+	
+		</div> 
+		
 
-      </div>
+    </div> 
+	
 
-    </div>
-
-	<!-- Section 2 -->
-	<section id="home" data-speed="4" data-type="background">
-	    <div class="container">
-	        More content goes here!
-	    </div>
-	</section>
-	<!-- Section 3 -->
-	<section id="about" data-speed="2" data-type="background">
-	    <div class="container">
-	        This is the final section!
-	    </div>
-	</section>
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/scroller.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/docs.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug 
-    <script src="js/ie10-viewport-bug-workaround.js"></script>-->
-  </body>
+</body>
 </html>
-
