@@ -21,28 +21,32 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.rekognition.adapter.FaceAdapter;
-import com.rekognition.adapter.JsonResponseAdapter;
-import com.rekognition.adapter.model.Face;
-import com.rekognition.adapter.model.FieldNotFoundException;
-import com.rekognition.api.impl.FaceCrawl;
 import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
-import com.rekognition.api.impl.FaceRecognize;
-import com.rekognition.http.model.RekognitionAPIException;
+import com.mashape.relocation.entity.mime.HttpMultipartMode;
+import com.mashape.relocation.entity.mime.MultipartEntity;
+import com.mashape.relocation.entity.mime.content.FileBody;
+import com.mashape.relocation.entity.mime.content.StringBody;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
-import org.json.JSONArray;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import cat.lafosca.facecropper.FaceCropper;
@@ -54,6 +58,10 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
     private static final String API_SECRET = "rPtvUe3aSd1eEq2G";
     private static final String NAME_SPACE = "demo_project";
     private static final String USER_ID = "demo_user";
+
+    private static final String FILE_PATH = "wyn.jpg";
+    private static final String ALBUM_KEY = "d1e462ca178d2282be15894f42f12cb60d95105cc44ef9781f227fa3fbfeae93";
+    private static final String ALBUM_NAME = "PennApps";
 
     /** {@link CardScrollView} to use as the main content view. */
     private CardScrollView mCardScroller;
@@ -134,63 +142,8 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
-
-
-//        ghettoTraining();
-
     }
 
-    private void ghettoTraining() {
-        // adding Facebook pictures
-        List<Long> friendIDs = new ArrayList<Long>();
-        friendIDs.add(100000072435606L);
-        friendIDs.add(100000153917216L);
-        friendIDs.add(100000313882986L);
-        friendIDs.add(1456846730L);
-        long myID = 100008949753855L;
-        String myAccessToken = "CAATzGYu82JYBACviil31ZBoGCZCEcO3Fx3xVvXVazNn7AXFyPTsBTWvmFeF1Pjzy1IkI8ZCImbZAgO4b9kPEs5mAxQoEkBViEm5lr4wZC6MV91aXncMIKz9nRlNymVoTvm76HW2pBBsaDZAZA7RgXQaJmTnL11LOZCPoiu6gkQPbBcJvxExwls6P8r1dxxepqYnZB4jtd2X2pKrG52Aic0Qksq0l4axU2y94ZD";
-//        RekoSDK.face_crawl(friendIDs, myID, myAccessToken, new RekoSDK.APICallback() {
-//            @Override
-//            public void gotResponse(String sResponse) {
-//                Log.e(TAG, "face_crawl response: " + sResponse);
-//            }
-//        });
-
-        FaceCrawl fc = new FaceCrawl(API_KEY, API_SECRET);
-        try {
-            String response = fc.getResponse(friendIDs, myID, myAccessToken, "PennApps", "PennApps").getJsonObject().toString();
-            Log.e(TAG, response);
-        } catch (RekognitionAPIException e) {
-            e.printStackTrace();
-        }
-
-        // training on the Facebook pictures
-//        RekoSDK.face_train("PennApps", myID, new RekoSDK.APICallback() {
-//            @Override
-//            public void gotResponse(String sResponse) {
-//                Log.e(TAG, "Trevin: " + sResponse);
-//            }
-//        });
-//        RekoSDK.face_train("PennApps", myID, new RekoSDK.APICallback() {
-//            @Override
-//            public void gotResponse(String sResponse) {
-//                Log.e(TAG, "Brady: " + sResponse);
-//            }
-//        });
-//        RekoSDK.face_train("PennApps", myID, new RekoSDK.APICallback() {
-//            @Override
-//            public void gotResponse(String sResponse) {
-//                Log.e(TAG, "Rajat: " + sResponse);
-//            }
-//        });
-//        RekoSDK.face_train("PennApps", myID, new RekoSDK.APICallback() {
-//            @Override
-//            public void gotResponse(String sResponse) {
-//                Log.e(TAG, "Colin: " + sResponse);
-//            }
-//        });
-
-    }
 
     @Override
     public void onShutter() {
@@ -207,134 +160,116 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
         /* Write byte array to jpeg file */
         try {
-            File photo=new File(this.getCacheDir(), "3eyeout.jpg");
+            File photo = new File(this.getCacheDir(), FILE_PATH);
             if (photo.exists()) {
                 photo.delete();
             }
+
+//            byte[] cropped = cropAndScale(bytes);
+
             fos = new FileOutputStream(photo.getPath());
             fos.write(bytes);
             fos.close();
-            processPhoto(bytes);
 
-//            PhotoAsyncTask task = new PhotoAsyncTask();
-//            task.execute(photo.getPath());
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e){
+            PhotoAsyncTask task = new PhotoAsyncTask();
+            task.execute(photo.getPath());
+//            processPhoto(bytes);
+        } catch (IOException e){
             e.printStackTrace();
         }
         return;
     }
 
-    private void processPhoto(byte[] photo) {
-        recognize(cropAndScale(photo));
+    private class PhotoAsyncTask extends AsyncTask<String, Void, JSONObject>{
+        /* Makes Post request */
+        @Override
+        protected JSONObject doInBackground(String... strings) {
+            try {
+                HttpResponse<JsonNode> response = Unirest.post("https://lambda-face-recognition.p.mashape.com/recognize")
+                        .header("X-Mashape-Key", "rnR1FFttHMmsh5QoMeo6UUUpPngdp1xhdlejsnq2w1xOWCap8z")
+//                        .header("Accept", "application/json")
+                        .field("album", "PennApps")
+                        .field("albumkey", "d1e462ca178d2282be15894f42f12cb60d95105cc44ef9781f227fa3fbfeae93")
+                        .field("files", new File(strings[0]))
+                        .asJson();
+                return response.getBody().getObject();
+            } catch (UnirestException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        /* Parses JSON, reads result to user */
+        @Override
+        protected void onPostExecute(final JSONObject jsonObject) {
+            super.onPostExecute(jsonObject);
+            Log.e(TAG, jsonObject.toString());
+            try {
+                String prediction = jsonObject.getJSONArray("photos").getJSONObject(0)
+                        .getJSONArray("tags").getJSONObject(0).getJSONArray("uids")
+                        .getJSONObject(0).getString("prediction");
+                Log.e(TAG, "prediction: " + prediction);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    // crops image to face and scales it to 800 x 800
-    private Bitmap cropAndScale(byte[] photo) {
+
+    private void processPhoto(byte[] photo) {
+//        recognize(photo);
+//        recognize(cropAndScale(photo));
+    }
+
+
+    private byte[] cropAndScale(byte[] photo) {
+        // crops image to face and scales it to 800 x 800
         Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length);
         FaceCropper mFaceCropper = new FaceCropper();
         mFaceCropper.setMaxFaces(1);
         Bitmap cropped = mFaceCropper.getCroppedImage(bitmap);
         Bitmap scaled = Bitmap.createScaledBitmap(cropped, 800, 800, false);
 
+        // convert to byte[]
+//        ByteBuffer byteBuffer = ByteBuffer.allocate(scaled.getByteCount());
+//        bitmap.copyPixelsToBuffer(byteBuffer);
+//        byte[] bytes = byteBuffer.array();
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        scaled.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] bytes = stream.toByteArray();
+
         ImageView iv = new ImageView(this);
         iv.setImageBitmap(scaled);
         ((FrameLayout)findViewById(R.id.layout)).addView(iv);
 
-        return scaled;
+        return bytes;
     }
 
-    private void recognize(Bitmap bmp) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] photo = stream.toByteArray();
-
-        // first API face_recognize failure
-
-//        RekoSDK.face_recognize(photo, new RekoSDK.APICallback() {
-//            @Override
-//            public void gotResponse(String sResponse) {
-//                try {
-//                    Log.e(TAG, "entered response callback");
-//                    JSONObject response = new JSONObject(sResponse);
-//                    if (response == null) {
-//                        Log.e(TAG, "response was null");
-//                    } else {
-//                        String parsed = parseResponse(response.getString("name"));
-//                        Log.e(TAG, parsed);
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+//    private void recognize(byte[] photo) {
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//        byte[] photo = stream.toByteArray();
 //
-//            }
-//        });
-
-        // first API face_search failure
-//        String[] tags = {"Rajat_Bhageria"};
-//        RekoSDK.face_search(tags, photo, NAME_SPACE, USER_ID, 1, new RekoSDK.APICallback() {
-//            @Override
-//            public void gotResponse(String sResponse) {
-//                try {
-//                    JSONObject jObject = new JSONObject(sResponse);
-//                    if (jObject == null) {
-//                        Log.e(TAG, "face_search JSONObject was null :)");
-//                    } else {
-//                        Log.e(TAG, "about to check JSONArray for matches :)");
-//                        JSONArray jArray = jObject.getJSONArray("matches");
-//                        if (jArray == null) {
-//                            Log.e(TAG, "JSONArray was null :)");
-//                        }
-//                        JSONObject firstmatch = jArray.getJSONObject(0);
-//                        if (firstmatch == null) {
-//                            Log.e(TAG, "first match was null :)");
-//                        }
-//                        String parsed = parseResponse(firstmatch.getString("tag"));
-//                        Log.e(TAG, "face_search response: " + parsed);
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-
-        // second API face_recognize
-//        List<String> tags = new ArrayList<String>();
-//        tags.add("Rajat_Bhageria");
-//        FaceRecognize fr = new FaceRecognize(API_KEY, API_SECRET);
-//        if (fr == null) {
-//            Log.e(TAG, "FaceRecognize is null :(");
-//        }
+//        // These code snippets use an open-source library. http://unirest.io/java
 //        try {
-//            FaceAdapter fa = fr.recognizeFaceWithoutDetect(photo, NAME_SPACE, USER_ID, 1, tags);
-//            // JSONObject fa_rootjson = fa.getJsonObject();
-//            Log.e(TAG, "got a FaceAdapter :)");
-//            List<Face> faces = fa.getFaces();
-//            Log.e(TAG, "got faces :)");
-//            Face firstFace = faces.get(0);
-//            Log.e(TAG, "got first face :)");
+//            // These code snippets use an open-source library.
+//            HttpResponse<JsonNode> response = Unirest.post("https://lambda-face-recognition.p.mashape.com/recognize")
+//                    .header("X-Mashape-Key", "rnR1FFttHMmsh5QoMeo6UUUpPngdp1xhdlejsnq2w1xOWCap8z")
+//                    .field("album", ALBUM_NAME)
+//                    .field("albumkey", ALBUM_KEY)
+//                    .field("files", photoFile)
+//                    .asJson();
+//
+//            // parse JSON
 //            try {
-//                List<Face.Match> matches = firstFace.getMatches();
-//                Log.e(TAG, "got matches :)");
-//                if (matches == null) {
-//                    Log.e(TAG, "matches are null :(");
-//                } else {
-//                    String tag = matches.get(0).getTag();
-//                    Log.e(TAG, "tag received: " + tag);
-//                }
-//            } catch (FieldNotFoundException e) {
-//                e.printStackTrace();
-//            } catch (JSONException e) {
+//                String prediction = response.getBody().getObject().getJSONArray("photos").getJSONObject(0)
+//                        .getJSONArray("tags").getJSONObject(0).getJSONArray("uids")
+//                        .getJSONObject(0).getString("prediction");
+//                Log.e(TAG, "prediction: " + prediction);
+//            } catch (Exception e) {
 //                e.printStackTrace();
 //            }
-//
-//
-//        } catch (RekognitionAPIException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
+//        } catch (UnirestException e) {
 //            e.printStackTrace();
 //        }
 //    }
@@ -379,21 +314,6 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         cam.stopPreview();
         cam.release();
         surfaceHolder = null;
-    }
-
-    private class PhotoAsyncTask extends AsyncTask<String, Void, JSONObject>{
-
-        /* Makes Post request */
-        @Override
-        protected JSONObject doInBackground(String... strings) {
-            return null;
-        }
-
-//        /* Parses JSON, reads result to user */
-        @Override
-        protected void onPostExecute(final JSONObject jsonObject) {
-            super.onPostExecute(jsonObject);
-        }
     }
 
     /* Camera stuff */
