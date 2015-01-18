@@ -21,21 +21,33 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.rekognition.adapter.JsonResponseAdapter;
+import com.rekognition.api.impl.FaceCrawl;
 import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
+import com.rekognition.http.model.RekognitionAPIException;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import cat.lafosca.facecropper.FaceCropper;
 
 public class MainActivity extends Activity implements TextToSpeech.OnInitListener,Camera.ShutterCallback,Camera.PictureCallback,SurfaceHolder.Callback{
+
+
+    private static final String API_KEY = "cwgLS8bE16Rv6on0";
+    private static final String API_SECRET = "rPtvUe3aSd1eEq2G";
+
     /** {@link CardScrollView} to use as the main content view. */
     private CardScrollView mCardScroller;
     private SurfaceView mSurfaceView;
@@ -47,7 +59,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
     private View mView;
 
     private TextToSpeech mTts;
-    private int  MY_DATA_CHECK_CODE =123;
+    private int  MY_DATA_CHECK_CODE = 123;
 
     @Override
     protected void onActivityResult(
@@ -116,6 +128,61 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
 
+
+//        ghettoTraining();
+
+    }
+
+    private void ghettoTraining() {
+        // adding Facebook pictures
+        List<Long> friendIDs = new ArrayList<Long>();
+        friendIDs.add(100000072435606L);
+        friendIDs.add(100000153917216L);
+        friendIDs.add(100000313882986L);
+        friendIDs.add(1456846730L);
+        long myID = 100008949753855L;
+        String myAccessToken = "CAATzGYu82JYBACviil31ZBoGCZCEcO3Fx3xVvXVazNn7AXFyPTsBTWvmFeF1Pjzy1IkI8ZCImbZAgO4b9kPEs5mAxQoEkBViEm5lr4wZC6MV91aXncMIKz9nRlNymVoTvm76HW2pBBsaDZAZA7RgXQaJmTnL11LOZCPoiu6gkQPbBcJvxExwls6P8r1dxxepqYnZB4jtd2X2pKrG52Aic0Qksq0l4axU2y94ZD";
+//        RekoSDK.face_crawl(friendIDs, myID, myAccessToken, new RekoSDK.APICallback() {
+//            @Override
+//            public void gotResponse(String sResponse) {
+//                Log.e(TAG, "face_crawl response: " + sResponse);
+//            }
+//        });
+
+        FaceCrawl fc = new FaceCrawl(API_KEY, API_SECRET);
+        try {
+            String response = fc.getResponse(friendIDs, myID, myAccessToken, "PennApps", "PennApps").getJsonObject().toString();
+            Log.e(TAG, response);
+        } catch (RekognitionAPIException e) {
+            e.printStackTrace();
+        }
+
+        // training on the Facebook pictures
+//        RekoSDK.face_train("PennApps", myID, new RekoSDK.APICallback() {
+//            @Override
+//            public void gotResponse(String sResponse) {
+//                Log.e(TAG, "Trevin: " + sResponse);
+//            }
+//        });
+//        RekoSDK.face_train("PennApps", myID, new RekoSDK.APICallback() {
+//            @Override
+//            public void gotResponse(String sResponse) {
+//                Log.e(TAG, "Brady: " + sResponse);
+//            }
+//        });
+//        RekoSDK.face_train("PennApps", myID, new RekoSDK.APICallback() {
+//            @Override
+//            public void gotResponse(String sResponse) {
+//                Log.e(TAG, "Rajat: " + sResponse);
+//            }
+//        });
+//        RekoSDK.face_train("PennApps", myID, new RekoSDK.APICallback() {
+//            @Override
+//            public void gotResponse(String sResponse) {
+//                Log.e(TAG, "Colin: " + sResponse);
+//            }
+//        });
+
     }
 
     @Override
@@ -140,7 +207,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
             fos = new FileOutputStream(photo.getPath());
             fos.write(bytes);
             fos.close();
-            startRecognition(photo.getPath());
+            processPhoto(bytes);
 
 //            PhotoAsyncTask task = new PhotoAsyncTask();
 //            task.execute(photo.getPath());
@@ -154,11 +221,13 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         return;
     }
 
-    public void startRecognition(String photoPath) {
-        // crops image to face and scales it to 800 x 800
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(photoPath, options);
+    private void processPhoto(byte[] photo) {
+        recognize(cropAndScale(photo));
+    }
+
+    // crops image to face and scales it to 800 x 800
+    private Bitmap cropAndScale(byte[] photo) {
+        Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length);
         FaceCropper mFaceCropper = new FaceCropper();
         mFaceCropper.setMaxFaces(1);
         Bitmap cropped = mFaceCropper.getCroppedImage(bitmap);
@@ -167,6 +236,36 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         ImageView iv = new ImageView(this);
         iv.setImageBitmap(scaled);
         ((FrameLayout)findViewById(R.id.layout)).addView(iv);
+
+        return scaled;
+    }
+
+    private void recognize(Bitmap bmp) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] photo = stream.toByteArray();
+        RekoSDK.face_recognize(photo, new RekoSDK.APICallback() {
+            @Override
+            public void gotResponse(String sResponse) {
+                try {
+                    Log.e(TAG, "entered response callback");
+                    JSONObject response = new JSONObject(sResponse);
+                    if (response == null) {
+                        Log.e(TAG, "response was null");
+                    } else {
+                        String parsed = parseResponse(response.getString("name"));
+                        Log.e(TAG, parsed);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+    private String parseResponse(String response) {
+        return response.substring(response.indexOf(":")).replaceAll("_", " ").toUpperCase();
     }
 
     @Override

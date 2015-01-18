@@ -1,3 +1,5 @@
+package com.example.brady.myapplication;
+
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ import android.util.Log;
  *   1. Update the value of sAPI_KEY and sAPI_SECRET to your API key and API secret.
  *   2. Create a callback object with the callback function. 
  *      For example: 
- *      RekoSDK.APICallback callback = new RekoSDK.APICallback(){
+ *      com.example.brady.myapplication.RekoSDK.APICallback callback = new com.example.brady.myapplication.RekoSDK.APICallback(){
  *			public void gotResponse(String sResponse){
  *				print(sResponse);
  *			}
@@ -216,6 +218,7 @@ public class RekoSDK {
 		List<NameValuePair> params = getBasicParameters();
 		params.add(new BasicNameValuePair("jobs", "face_recognize"));
 		addImageDataValuePair(params, null, b);
+        addNameSpaceAndUserID(params, "demo_project", "demo_user");
 		callAPICallInAnotherThread(params, callbackFunc);
 	}
 	
@@ -553,6 +556,7 @@ public class RekoSDK {
             HttpEntity responseEntity = response.getEntity();
             if(responseEntity!=null) {
             	//You can refer to the documentation pages on ReKogntion.com to understand the structure of response
+
             	sResponse = EntityUtils.toString(responseEntity);
                 Log.v("json_result", sResponse);  
             }
