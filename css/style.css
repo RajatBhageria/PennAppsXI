@@ -205,6 +205,21 @@ ul.built { list-style: none; margin: 0 auto; width: 730px; }
 	font-size: 12px;
 }
 
+#slide1 iframe {
+	margin: 25px;
+}
+
+#quote {
+	width: 100%;
+	padding-top: 70px;
+	padding-bottom: 70px;
+	font-size: 30px;
+	color: #555;
+	font-family: Comfortaa;
+	text-align: center;
+	font-weight: 300;
+}
+
 /*= FOOTER 
 --------------------------------------------------------*/
 
