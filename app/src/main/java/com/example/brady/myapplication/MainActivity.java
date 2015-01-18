@@ -21,13 +21,18 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.rekognition.adapter.FaceAdapter;
 import com.rekognition.adapter.JsonResponseAdapter;
+import com.rekognition.adapter.model.Face;
+import com.rekognition.adapter.model.FieldNotFoundException;
 import com.rekognition.api.impl.FaceCrawl;
 import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
+import com.rekognition.api.impl.FaceRecognize;
 import com.rekognition.http.model.RekognitionAPIException;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,6 +52,8 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
     private static final String API_KEY = "cwgLS8bE16Rv6on0";
     private static final String API_SECRET = "rPtvUe3aSd1eEq2G";
+    private static final String NAME_SPACE = "demo_project";
+    private static final String USER_ID = "demo_user";
 
     /** {@link CardScrollView} to use as the main content view. */
     private CardScrollView mCardScroller;
@@ -244,25 +251,93 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] photo = stream.toByteArray();
-        RekoSDK.face_recognize(photo, new RekoSDK.APICallback() {
-            @Override
-            public void gotResponse(String sResponse) {
-                try {
-                    Log.e(TAG, "entered response callback");
-                    JSONObject response = new JSONObject(sResponse);
-                    if (response == null) {
-                        Log.e(TAG, "response was null");
-                    } else {
-                        String parsed = parseResponse(response.getString("name"));
-                        Log.e(TAG, parsed);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
-            }
-        });
-    }
+        // first API face_recognize failure
+
+//        RekoSDK.face_recognize(photo, new RekoSDK.APICallback() {
+//            @Override
+//            public void gotResponse(String sResponse) {
+//                try {
+//                    Log.e(TAG, "entered response callback");
+//                    JSONObject response = new JSONObject(sResponse);
+//                    if (response == null) {
+//                        Log.e(TAG, "response was null");
+//                    } else {
+//                        String parsed = parseResponse(response.getString("name"));
+//                        Log.e(TAG, parsed);
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        });
+
+        // first API face_search failure
+//        String[] tags = {"Rajat_Bhageria"};
+//        RekoSDK.face_search(tags, photo, NAME_SPACE, USER_ID, 1, new RekoSDK.APICallback() {
+//            @Override
+//            public void gotResponse(String sResponse) {
+//                try {
+//                    JSONObject jObject = new JSONObject(sResponse);
+//                    if (jObject == null) {
+//                        Log.e(TAG, "face_search JSONObject was null :)");
+//                    } else {
+//                        Log.e(TAG, "about to check JSONArray for matches :)");
+//                        JSONArray jArray = jObject.getJSONArray("matches");
+//                        if (jArray == null) {
+//                            Log.e(TAG, "JSONArray was null :)");
+//                        }
+//                        JSONObject firstmatch = jArray.getJSONObject(0);
+//                        if (firstmatch == null) {
+//                            Log.e(TAG, "first match was null :)");
+//                        }
+//                        String parsed = parseResponse(firstmatch.getString("tag"));
+//                        Log.e(TAG, "face_search response: " + parsed);
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+
+        // second API face_recognize
+//        List<String> tags = new ArrayList<String>();
+//        tags.add("Rajat_Bhageria");
+//        FaceRecognize fr = new FaceRecognize(API_KEY, API_SECRET);
+//        if (fr == null) {
+//            Log.e(TAG, "FaceRecognize is null :(");
+//        }
+//        try {
+//            FaceAdapter fa = fr.recognizeFaceWithoutDetect(photo, NAME_SPACE, USER_ID, 1, tags);
+//            // JSONObject fa_rootjson = fa.getJsonObject();
+//            Log.e(TAG, "got a FaceAdapter :)");
+//            List<Face> faces = fa.getFaces();
+//            Log.e(TAG, "got faces :)");
+//            Face firstFace = faces.get(0);
+//            Log.e(TAG, "got first face :)");
+//            try {
+//                List<Face.Match> matches = firstFace.getMatches();
+//                Log.e(TAG, "got matches :)");
+//                if (matches == null) {
+//                    Log.e(TAG, "matches are null :(");
+//                } else {
+//                    String tag = matches.get(0).getTag();
+//                    Log.e(TAG, "tag received: " + tag);
+//                }
+//            } catch (FieldNotFoundException e) {
+//                e.printStackTrace();
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//
+//
+//        } catch (RekognitionAPIException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private String parseResponse(String response) {
         return response.substring(response.indexOf(":")).replaceAll("_", " ").toUpperCase();
